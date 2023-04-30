@@ -1,4 +1,5 @@
 from peewee import *
+import datetime
 
 
 db = SqliteDatabase('db_yandex.db')
@@ -56,10 +57,6 @@ class Reply(BaseModel):
         null=False,
         help_text='Время отправки ответа на вопрос студента'
     )
-    is_replied = BooleanField(
-        default=False,
-        help_text='Есть ли реплай на реплай'
-    )
 
     class Meta:
         db_table = 'replies'
@@ -69,6 +66,10 @@ class Thread(BaseModel):
     thread_id = IntegerField(
         primary_key=True,
         help_text='Id треда'
+    )
+    first_replied_at = DateTimeField(
+        default=datetime.datetime.now,
+        help_text='Время начала треда',
     )
     first_message_id = ForeignKeyField(
         Question,
@@ -85,10 +86,13 @@ class Thread(BaseModel):
         related_name='thread_end',
         help_text='Последнее сообщение в треде'
     )
-    num_messages = IntegerField(
-        help_text='Количество сообщений в треде'
+    total_messages = IntegerField(
+        default=0,
+        help_text='Количество всех сообщений в треде'
     )
-
+    thread_duration = DateTimeField(
+        help_text='Продолжительность треда'
+    )
     class Meta:
         db_table = 'threads'
 
@@ -96,4 +100,3 @@ class Thread(BaseModel):
 Question.create_table()
 Reply.create_table()
 Thread.create_table()
-
